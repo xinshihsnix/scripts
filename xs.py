@@ -2,7 +2,9 @@
 # -*- coding: utf8 -*-
 
 import sys
-from db_service import xsite_dbs
+
+from scripts.services.db_service import xsite_dbs
+
 
 # print sys.argv
 

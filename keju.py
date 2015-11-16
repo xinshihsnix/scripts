@@ -56,6 +56,7 @@ def handle_hq():
 
 
 def handle_git_pull():
+    print_hint('git pull start')
     os.chdir(git_keju_path)
 
     pull_cmd = 'git pull'
@@ -75,8 +76,11 @@ def handle_git_pull():
     print_hint(pull_cmd + ' result', child.read())      # 打印执行结果
     child.close(force=True)
 
+    print_hint(' end ')
+
 
 def handle_git_push():
+    print_hint('git push start')
     os.chdir(git_keju_path)
 
     push_cmd = 'git push'
@@ -95,6 +99,8 @@ def handle_git_push():
 
     print_hint(push_cmd + ' result', child.read())      # 打印执行结果
     child.close(force=True)
+
+    print_hint(' end ')
 
 
 def handle_git_commit():
@@ -136,6 +142,23 @@ def handle_git_commit():
     run_command_and_show_result(git_status)
 
 
+def handle_git_yitiaolong():
+    print 'git pull??'
+    i = raw_input()
+    if i.lower() == 'y':
+        handle_git_pull()
+
+    print 'git commit??'
+    i = raw_input()
+    if i.lower() == 'y':
+        handle_git_commit()
+
+    print 'git push??'
+    i = raw_input()
+    if i.lower() == 'y':
+        handle_git_push()
+
+
 def handle_help():
     for o in options:
         print o.get('option'), ':', o.get('help_text')
@@ -160,6 +183,11 @@ options = [
         'option': 'gph',
         'help_text': 'git push',
         'function': handle_git_push,
+    },
+    {
+        'option': 'gytl',
+        'help_text': 'git yitiaolong',
+        'function': handle_git_yitiaolong,
     },
     {
         'option': '--help',

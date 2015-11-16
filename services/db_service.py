@@ -1,7 +1,7 @@
 # coding: utf-8
 import MySQLdb
 
-from settings import DB_NAME, DB_USERNAME, DB_PASSWORD
+# from settings import DB_NAME, DB_USERNAME, DB_PASSWORD
 
 
 class DBService(object):
@@ -29,4 +29,4 @@ class DBService(object):
         self.cursor.close()
         self.conn.close()
 
-xsite_dbs = DBService('127.0.0.1', DB_USERNAME, DB_PASSWORD, DB_NAME)
+# xsite_dbs = DBService('127.0.0.1', DB_USERNAME, DB_PASSWORD, DB_NAME)

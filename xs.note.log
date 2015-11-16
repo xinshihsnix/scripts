@@ -1,0 +1,25 @@
+scp /home/daisy/full.tar.gz root@172.19.2.75:/home/root
+------
+a='Beautiful, is; better*than\nugly'
+re.split('; |, |\*|\n',a)
+['Beautiful', 'is', 'better', 'than', 'ugly']
+-----
+/etc/rc.local
+-----
+/etc/rc.local
+ rm /root/.pycharm40 -rf
+-----
+sudo chown -R xinshi:xinshi my-script/
+-----
+ln -s /usr/src/my-script/python_script/keju.py ke
+-----
+echo 1500 > /sys/class/backlight/intel_backlight/brightness
+-----
+ubuntu: workspace Ctrl + Alt +上/下方向键
+-----
+Ubuntu中打开终端的快捷键是Ctrl+Alt+T
+-----
+ubuntu: ctrl pgup/pgdn
+-----
+/etc/crontab
+-----
