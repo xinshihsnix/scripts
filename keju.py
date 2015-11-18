@@ -6,28 +6,16 @@ import commands
 import subprocess
 import re
 import pexpect
+import pxssh
+import time
 
-from settings import GIT_USERNAME, GIT_PASSWORD
+from settings import *
 
-# -------------------------
-wt_path = u'/home/xinshi/projects/wt-html最新版'
-
-css_source_path = '/home/xinshi/projects/wt-html最新版/css/red.css'
-css_to_path = '/home/xinshi/projects/KeJu/wechat/static/wechat/css/red.css'
-
-images_source_path = '/home/xinshi/projects/wt-html最新版/images/*'
-images_to_path = '/home/xinshi/projects/KeJu/wechat/static/wechat/images/'
-
-git_keju_path = '/home/xinshi/projects/KeJu'
-
-git_commit_exclude_files = ['KeJu/settings.py', 'common/decorator/auth.py']
-# -------------------------
-
-argvs = [a.lower() for a in sys.argv]   # 忽略大小写
+argvs = sys.argv
 
 option = argvs[1]
 
-hint_format = '++++++++++++ {0} +++++++++++'
+hint_format = u'++++++++++++ {0} +++++++++++'
 
 
 def print_hint(hint, result):
@@ -43,21 +31,20 @@ def run_command_and_show_result(cmd):
 
 
 def handle_hq():
-    os.chdir(wt_path)
+    os.chdir(WT_PATH)
 
     svn_cmd = 'svn up'
     run_command_and_show_result(svn_cmd)
 
-    cp_css_command = "cp {0} {1}".format(css_source_path, css_to_path)
+    cp_css_command = u"cp {0} {1}".format(CSS_SOURCE_PATH, CSS_TO_PATH)
     run_command_and_show_result(cp_css_command)
 
-    cp_images_command = 'cp -R {0} {1}'.format(images_source_path, images_to_path)
+    cp_images_command = u'cp -R {0} {1}'.format(IMAGES_SOURCE_PATH, IMAGES_TO_PATH)
     run_command_and_show_result(cp_images_command)
 
 
 def handle_git_pull():
-    print_hint('git pull start')
-    os.chdir(git_keju_path)
+    os.chdir(GIT_KEJU_PATH)
 
     pull_cmd = 'git pull'
     child = pexpect.spawn(pull_cmd)
@@ -76,12 +63,9 @@ def handle_git_pull():
     print_hint(pull_cmd + ' result', child.read())      # 打印执行结果
     child.close(force=True)
 
-    print_hint(' end ')
-
 
 def handle_git_push():
-    print_hint('git push start')
-    os.chdir(git_keju_path)
+    os.chdir(GIT_KEJU_PATH)
 
     push_cmd = 'git push'
     child = pexpect.spawn(push_cmd)
@@ -100,18 +84,16 @@ def handle_git_push():
     print_hint(push_cmd + ' result', child.read())      # 打印执行结果
     child.close(force=True)
 
-    print_hint(' end ')
 
+def handle_git_commit(commit_notes):
+    os.chdir(GIT_KEJU_PATH)
 
-def handle_git_commit():
-    os.chdir(git_keju_path)
-
-    git_add_A = 'git add *.css *.png *.jpg'
+    git_add_A = 'git add *.css *.png *.jpg *.html *.py'
     run_command_and_show_result(git_add_A)
 
     git_status = 'git status'
     s = subprocess.Popen(git_status, shell=True, stdout=subprocess.PIPE)
-    (stdoutdata, stderrdata) =  s.communicate()
+    (stdoutdata, stderrdata) = s.communicate()
     print_hint(git_status, stdoutdata)
 
     out_s_list = re.split('\s+', stdoutdata)
@@ -121,7 +103,7 @@ def handle_git_commit():
         if os.path.exists(o):
             commit_path_list.append(o)
 
-    for e in git_commit_exclude_files:      # pop settings & auth debug
+    for e in GIT_COMMIT_EXCLUDE_FILES:      # pop settings & auth debug
         if e in commit_path_list:
             commit_path_list.remove(e)
 
@@ -129,7 +111,8 @@ def handle_git_commit():
     for p in commit_path_list:
         commit_cmd += '  %s'%p
 
-    commit_notes = argvs[2]
+    if not commit_notes:
+        commit_notes = argvs[2]
     commit_cmd += "  -m'%s' "%commit_notes
     print '!!!!!!!!!! you will execute this command! !!!!!!!!!!!'
     print commit_cmd
@@ -142,21 +125,83 @@ def handle_git_commit():
     run_command_and_show_result(git_status)
 
 
+# def handle_test_git_pull():
+#     cd_keju = 'cd /var/www/KeJu'
+#
+#     try:
+#         # 调用构造函数，创建一个 pxssh 类的对象.
+#         s = pxssh.pxssh()
+#         s.login (TEST_SERVER_IP, TEST_SERVER_USERNAME, TEST_SERVER_PASSWORD, login_timeout=200)
+#
+#         s.sendline(cd_keju)
+#         s.prompt()
+#
+#         s.sendline('git pull')
+#         s.prompt()       # match the prompt
+#         print s.before      # print everything before the propt.
+#         s.logout()
+#     except pxssh.ExceptionPxssh, e:
+#         print "pxssh failed on login."
+#         print str(e)
+
+
 def handle_git_yitiaolong():
     print 'git pull??'
+    print 'press enter to continue'
     i = raw_input()
-    if i.lower() == 'y':
+    if not i:
         handle_git_pull()
 
-    print 'git commit??'
-    i = raw_input()
-    if i.lower() == 'y':
-        handle_git_commit()
+    commit_notes = argvs[2]
+    handle_git_commit(commit_notes)
 
     print 'git push??'
+    print 'press enter to continue'
     i = raw_input()
-    if i.lower() == 'y':
+    if not i:
         handle_git_push()
+
+
+def handle_test_connect():
+    os.chdir('/usr/src/my-script/shell_script')
+    connect_cmd = './keju_new_test_server_terminal.sh'
+
+    os.system(connect_cmd)
+
+
+def handle_product_connect():
+    os.chdir('/usr/src/my-script/shell_script')
+    connect_cmd = './keju_new_product_server_terminal.sh'
+
+    os.system(connect_cmd)
+
+
+def handle_note():
+    os.system("less {0}".format(KEJU_NOTE_PATH))
+
+
+def handle_breakfast():
+    os.system('gnome-terminal --title="test server" --command="ke tc" --geometry=120x30+150+200')
+    os.system('gnome-terminal --title="product server" --command="ke pc" --geometry=120x20+0+0')
+
+    os.system('charm & >> /dev/null')
+    for t in TAB_SITES:
+        os.system("firefox --new-tab {0} & >> /dev/null".format(t))
+        time.sleep(6)
+    os.system("python /home/xinshi/projects/KeJu/manage.py runserver 0.0.0.0:7777")
+
+
+def handle_note_insert():
+    content = argvs[2]
+    cmd = "echo '{0}' >> {1}".format(content, KEJU_NOTE_PATH)
+    os.system(cmd)
+
+    cmd = "echo '{0}' >> {1}".format('', KEJU_NOTE_PATH)
+    os.system(cmd)
+
+def handle_product_mysql():
+    cmd = "mysql -h {0} -u {1} -p{2}".format(MYSQL_PRODUCT_IP, MYSQL_PRODUCT_USERNAME, MYSQL_PRODUCT_PASSWORD)
+    os.system(cmd)
 
 
 def handle_help():
@@ -171,7 +216,7 @@ options = [
     },
     {
         'option': 'gc',
-        'help_text': 'git status&commit',
+        'help_text': 'git status&commit [param 1: 备注]',
         'function': handle_git_commit,
     },
     {
@@ -186,9 +231,40 @@ options = [
     },
     {
         'option': 'gytl',
-        'help_text': 'git yitiaolong',
+        'help_text': 'git yitiaolong [param 1: 备注]',
         'function': handle_git_yitiaolong,
     },
+    {
+        'option': 'note',
+        'help_text': 'less note',
+        'function': handle_note,
+    },
+    {
+        'option': 'tc',
+        'help_text': 'test server connect',
+        'function': handle_test_connect,
+    },
+    {
+        'option': 'pc',
+        'help_text': 'product server connect',
+        'function': handle_product_connect,
+    },
+    {
+        'option': 'bf',
+        'help_text': 'breakfast',
+        'function': handle_breakfast,
+    },
+    {
+        'option': 'ni',
+        'help_text': 'note insert',
+        'function': handle_note_insert,
+    },
+    {
+        'option': 'pm',
+        'help_text': 'product mysql connect',
+        'function': handle_product_mysql,
+    },
+
     {
         'option': '--help',
         'help_text': 'help',
