@@ -23,3 +23,25 @@ ubuntu: ctrl pgup/pgdn
 -----
 /etc/crontab
 -----
+delete from bargain_ticket_sn where activity_id=202;
+-----
+sudo apt-get install -y ntpdate ntp 
+-----
+ubuntu: ntpdate stdtime.sinica.edu.tw 
+-----
+ntpdate cn.pool.ntp.org
+-----
+ubuntu: rm /etc/localtime** ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+-----
+Git让gitignore生效**git rm -r --cached .**git add .**
+-----
+超级科学伙伴
+-----
+unrar x
+-----
+linux: ll -rt 时间排序
+-----
+html to image: http://www.cszhi.com/20130305/cutycapt.html
+-----
+mysql: delete from 表名;
+-----
